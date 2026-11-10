@@ -91,7 +91,7 @@ reusable workflows ติด tag `v1`
 
 - `compose/infra.yml`: Postgres, Redis, NATS, OSRM, observability stack
 - `compose/services.yml`: ทุก service ระบุ image tag
-- `compose/.env.local`, `.env.hybrid`, `.env.server`
+- `compose/.env.example`: แม่แบบค่าตั้งต้น `task up` คัดลอกเป็น `compose/.env` (ไม่ commit) ให้เมื่อยังไม่มี บน server แก้รหัสผ่านใน `.env` เอง
 - `osrm/`: script เตรียมข้อมูลประเทศไทย
 - `observability/`: config ของ Collector, Prometheus, Grafana dashboard
 - `k8s/` (phase 4): Helm chart กลาง, values ต่อ service, Argo CD app
