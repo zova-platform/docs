@@ -184,7 +184,7 @@ phase แรกมี 6 service + simulator และอีก 2 service เพ�
 | Query | sqlc | generate Go จาก SQL | เขียน SQL จริงแต่ type-safe ไม่ต้องใช้ ORM |
 | Migration | goose หรือ golang-migrate | เวอร์ชัน schema | รันใน CI และตอน deploy ได้ |
 | Cache / GEO | Redis (หรือ Valkey) | พิกัดคนขับ, lock, quote, rate limit | `GEOSEARCH` เร็วมาก · ทางเลือกภายหลัง: Uber H3 |
-| Routing | OSRM + ข้อมูลไทยจาก Geofabrik (OpenStreetMap) | ระยะทาง/เวลาจริงบนถนน, เส้นทางของ simulator | ฟรี เร็ว รันใน Docker ได้ |
+| Routing | OSRM + ข้อมูลกรุงเทพฯ ตัดจากไฟล์ประเทศไทยของ Geofabrik (OpenStreetMap) | ระยะทาง/เวลาจริงบนถนน, เส้นทางของ simulator | ฟรี เร็ว รันใน Docker ได้ |
 | แผนที่หน้าเว็บ | MapLibre GL JS ผ่าน react-map-gl + PMTiles (Protomaps) | แสดงแผนที่และรถ | self-host tile ได้ ไม่ติด usage policy ของ tile server สาธารณะ |
 | Frontend | Vite + React + TypeScript (React Router, TanStack Query, Zustand, Tailwind CSS, pnpm) | หน้าผู้โดยสาร คนขับ และ ops dashboard | ไม่ต้องใช้ SSR เพราะ backend อยู่ที่ gateway, build เป็นไฟล์ static เบากว่ารัน Node server |
 | Auth | JWT (access สั้น + refresh ยาว), argon2id | ยืนยันตัวตน | เขียนเองเพื่อเรียนรู้ · ทางเลือก: Keycloak, Zitadel |
@@ -286,7 +286,7 @@ trip-service/
 3. รัน service ที่กำลังแก้ด้วย `air` บนเครื่อง ส่วน service อื่นรันจาก image ใน compose
 4. ถ้าต้องแก้ `proto` หรือ `platform-go` พร้อมกัน ใช้ `go.work` ชี้ไปโฟลเดอร์ local ชั่วคราว (อย่า commit `go.work`)
 
-OSRM ต้องเตรียมข้อมูลไทยครั้งแรก: ดาวน์โหลด `thailand-latest.osm.pbf` จาก Geofabrik แล้วรัน `osrm-extract`, `osrm-partition`, `osrm-customize` ทำเป็น task เดียวไว้ใน `deploy`
+OSRM ต้องเตรียมข้อมูลครั้งแรก: ดาวน์โหลด `thailand-latest.osm.pbf` จาก Geofabrik ตัดเหลือกรอบกรุงเทพฯ ด้วย `osmium extract` แล้วรัน `osrm-extract`, `osrm-partition`, `osrm-customize` ทำเป็น task เดียวไว้ใน `deploy`
 
 **CI/CD (GitHub Actions)**
 
@@ -370,7 +370,7 @@ simulator คือสิ่งที่ทำให้ demo มีชีวิ�
 
 - [ ] สร้าง org, เปิด 2FA, สร้าง repo `.github`, `docs`, `proto`, `platform-go`, `ci-workflows`, `deploy`
 - [ ] เขียน ADR แรก: เลือก polyrepo, gRPC + NATS, Postgres + Redis
-- [ ] `deploy/compose`: Postgres, Redis, NATS, OSRM (ข้อมูลไทย), OTel Collector, Prometheus, Tempo, Loki, Grafana
+- [ ] `deploy/compose`: Postgres, Redis, NATS, OSRM (ข้อมูลกรุงเทพฯ), OTel Collector, Prometheus, Tempo, Loki, Grafana
 - [ ] `platform-go`: slog, OpenTelemetry, gRPC interceptor, graceful shutdown, health check
 - [ ] reusable workflow `go-ci.yml` และ `docker-publish.yml`
 - [ ] service ตัวอย่าง (`hello`) ผ่าน CI, push ขึ้น ghcr และเห็น trace ใน Grafana
@@ -418,7 +418,7 @@ simulator คือสิ่งที่ทำให้ demo มีชีวิ�
 | distributed monolith (service ต้อง deploy พร้อมกันตลอด) | สื่อสารผ่าน proto/event ที่มีเวอร์ชัน, `platform-go` ไม่มี business logic |
 | event หาย หรือได้ซ้ำ | outbox + JetStream ack + consumer idempotent |
 | คนขับโดนจับคู่ซ้อน | Redis `SET NX` + TTL และเช็ค version ของทริปตอนเขียน |
-| home server ทรัพยากรไม่พอ (OSRM ใช้ RAM เยอะ) | ใช้ข้อมูลเฉพาะไทย, ตั้ง resource limit, ปิด service ที่ไม่ใช้ตอน dev |
+| home server ทรัพยากรไม่พอ (OSRM ใช้ RAM เยอะ) | ใช้ข้อมูลเฉพาะกรุงเทพฯ (ทั้งประเทศไทยสร้างกราฟไม่ผ่านที่ RAM 7 GB), ตั้ง resource limit, ปิด service ที่ไม่ใช้ตอน dev |
 | ใช้ tile แผนที่สาธารณะเกินนโยบาย | self-host PMTiles หรือใช้ผู้ให้บริการที่มี free tier |
 | เปิด demo สู่ภายนอกแล้วโดนสแปม | rate limit ใน gateway, ให้สมัครด้วย invite code |
 

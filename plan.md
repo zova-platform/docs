@@ -67,6 +67,7 @@
 - [ ] `feat(observability): add otel collector, prometheus, tempo, loki and grafana`
 - [ ] `feat(observability): provision grafana datasources`
 - [ ] `feat(osrm): add thailand data prep task and osrm service`
+- [ ] `feat(osrm): clip map data to the Bangkok area`
 - [ ] `docs: explain local setup in README`
 
 ### 0.7 `service-template`: แม่แบบ service
