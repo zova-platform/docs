@@ -44,21 +44,21 @@
 
 ### 0.4 `proto`: ตั้งค่า Buf
 
-- [ ] `chore: init buf module with lint and breaking rules`
-- [ ] `feat(common): add LatLng, Money and Pagination types`
-- [ ] `ci: run buf lint, buf breaking and generate check`
-- [ ] ติด tag `v0.1.0`
+- [x] `chore: init buf module with lint and breaking rules`
+- [x] `feat(common): add LatLng, Money and Pagination types`
+- [x] `ci: run buf lint, buf breaking and generate check`
+- [x] ติด tag `v0.1.0`
 
 ### 0.5 `platform-go`: library กลางชุดแรก
 
-- [ ] `chore: init module, golangci config and CI`
-- [ ] `feat(config): load environment variables into struct`
-- [ ] `feat(logx): add JSON slog logger with trace_id`
-- [ ] `feat(otelx): set up tracer and meter providers over OTLP`
-- [ ] `feat(health): serve healthz, readyz and metrics endpoints`
-- [ ] `feat(grpcx): add server and client with log, trace, recover and timeout interceptors`
-- [ ] `feat(run): add graceful shutdown lifecycle`
-- [ ] ติด tag `v0.1.0`
+- [x] `chore: init module, golangci config and CI`
+- [x] `feat(config): load environment variables into struct`
+- [x] `feat(logx): add JSON slog logger with trace_id`
+- [x] `feat(otelx): set up tracer and meter providers over OTLP`
+- [x] `feat(health): serve healthz, readyz and metrics endpoints`
+- [x] `feat(grpcx): add gRPC server and client with interceptors`
+- [x] `feat(run): add graceful shutdown lifecycle`
+- [x] ติด tag `v0.1.0`
 
 ### 0.6 `deploy`: infra บนเครื่อง
 
@@ -67,6 +67,7 @@
 - [ ] `feat(observability): add otel collector, prometheus, tempo, loki and grafana`
 - [ ] `feat(observability): provision grafana datasources`
 - [ ] `feat(osrm): add thailand data prep task and osrm service`
+- [ ] `feat(osrm): clip map data to the Bangkok area`
 - [ ] `docs: explain local setup in README`
 
 ### 0.7 `service-template`: แม่แบบ service
