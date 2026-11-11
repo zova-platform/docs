@@ -80,10 +80,10 @@
 
 ### 0.8 ตรวจรับ Phase 0
 
-- [ ] `feat(compose): run service-template as smoke service` (ใน `deploy`)
-- [ ] เปิด Grafana เห็น trace และ metric ของ smoke service
-- [ ] ตั้ง ruleset ของ `main` ให้ทุก repo ที่มี CI แล้ว
-- [ ] `chore(compose): remove smoke service`
+- [x] `feat(compose): run service-template as smoke service` (ใน `deploy`)
+- [x] เปิด Grafana เห็น trace และ metric ของ smoke service
+- [x] ตั้ง ruleset ของ `main` ให้ทุก repo ที่มี CI แล้ว
+- [x] `chore(compose): remove smoke service`
 
 ## Phase 1: Ride MVP
 
