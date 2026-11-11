@@ -100,11 +100,11 @@
 
 ### 1.2 `platform-go`: event และ outbox
 
-- [ ] `feat(natsx): connect JetStream and publish with trace context`
-- [ ] `feat(natsx): add durable consumer with event_id dedupe`
-- [ ] `feat(natsx): add push helper for push.user subjects`
-- [ ] `feat(outbox): add outbox table migration and publisher worker`
-- [ ] ติด tag `v0.2.0`
+- [x] `feat(natsx): connect JetStream and publish with trace context`
+- [x] `feat(natsx): add durable consumer with event_id dedupe`
+- [x] `feat(natsx): add push helper for push.user subjects`
+- [x] `feat(outbox): add outbox table migration and publisher worker`
+- [x] ติด tag `v0.2.0`
 
 ### 1.3 `auth-service`
 
