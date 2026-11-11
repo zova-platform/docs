@@ -231,9 +231,11 @@ MOVED_EVENT_INTERVAL=1s
 
 | Method | ทำอะไร |
 | --- | --- |
-| `CreateQuote` | pickup, dropoff, vehicle\_type → ถาม OSRM → คืน quote\_id, fare, distance\_m, duration\_s, route polyline |
+| `CreateQuote` | pickup, dropoff, vehicle\_type → ตรวจว่าอยู่ในพื้นที่บริการ → ถาม OSRM → คืน quote\_id, fare, distance\_m, duration\_s, route polyline ถ้าจุดใดอยู่นอก `SERVICE_AREA_BBOX` ตอบ `InvalidArgument` พร้อมเหตุผล `OUT_OF_SERVICE_AREA` โดยไม่ถาม OSRM |
 | `GetQuote` | ตรวจว่า quote ยังไม่หมดอายุ (trip เรียกก่อนสร้างทริป) |
 | `CalculateFinalFare` | ระยะและเวลาจริงตอนจบทริป → ราคาสุดท้าย |
+
+**พื้นที่บริการ:** OSRM มีแผนที่เฉพาะกรอบกรุงเทพฯ (`OSRM_BBOX` ใน `deploy`) จึงรับเฉพาะจุดที่อยู่ใน `SERVICE_AREA_BBOX` (รูปแบบ west,south,east,north) ซึ่งต้องเล็กกว่ากรอบข้อมูล OSRM ประมาณ 5 กม. ที่ขอบ เพราะถนนที่ถูกตัดตามขอบกรอบอาจเชื่อมไม่ต่อ ค่านี้ตั้งผ่าน config ค่าเดียวและ service อื่นใช้ค่าเดียวกัน
 
 **สูตรเริ่มต้น:** `max(min_fare, base_fare + per_km × km + per_min × นาที)` ปัดเป็นบาทเต็ม ค่าแต่ละตัวแยกตาม car/moto อยู่ในตาราง `fare_rules` (phase หลังเพิ่ม surge multiplier)
 
@@ -248,12 +250,14 @@ DATABASE_URL=postgres://pricing:***@postgres:5432/pricing
 REDIS_URL=redis://redis:6379/2
 OSRM_URL=http://osrm:5000
 QUOTE_TTL=5m
+SERVICE_AREA_BBOX=100.37,13.54,100.90,13.91
 ```
 
 **เสร็จเมื่อ**
 
 - [ ] unit test ของสูตรครอบกรณี min\_fare, ระยะ 0, moto กับ car
 - [ ] OSRM ล่มหรือช้า → ตอบ error ชัดเจนภายใน timeout ไม่ค้าง
+- [ ] pickup หรือ dropoff อยู่นอกพื้นที่บริการ → `OUT_OF_SERVICE_AREA` และไม่เรียก OSRM
 - [ ] quote หมดอายุแล้วสร้างทริปไม่ได้
 
 ## `dispatch-service` (Phase 1)
@@ -357,7 +361,7 @@ src/
 | หน้า | ทำอะไร |
 | --- | --- |
 | `/login`, `/register` | เข้าสู่ระบบ |
-| `/` | ปักหมุดต้นทาง/ปลายทาง เลือก Car/Moto เห็นราคาและเส้นทาง กดเรียก |
+| `/` | ปักหมุดต้นทาง/ปลายทาง (เฉพาะในพื้นที่บริการ นอกกรอบแจ้งเตือนผู้ใช้) เลือก Car/Moto เห็นราคาและเส้นทาง กดเรียก |
 | `/trip/:id` | สถานะทริป รถวิ่งมาบนแผนที่ ข้อมูลคนขับและป้ายทะเบียน ปุ่มยกเลิก |
 | `/history` | ทริปที่ผ่านมา |
 
@@ -400,7 +404,7 @@ simulator scenario  concert-exit   # 200 คนขอรถพร้อมกั
 simulator seed      --drivers 1000 --riders 1000   # สร้างบัญชีผ่าน auth
 ```
 
-**Config:** จำนวนคนขับ, สัดส่วน car/moto, อัตราขอรถ, อัตรารับงาน, หน่วงเวลาตอบ, ตัวคูณความเร็ว (เร่งเวลาสำหรับ demo), กรอบพื้นที่
+**Config:** จำนวนคนขับ, สัดส่วน car/moto, อัตราขอรถ, อัตรารับงาน, หน่วงเวลาตอบ, ตัวคูณความเร็ว (เร่งเวลาสำหรับ demo), กรอบพื้นที่ (ตำแหน่งเริ่มต้น จุดรับ และจุดส่งสุ่มเฉพาะใน `SERVICE_AREA_BBOX` และ `--area` ต้องอยู่ในกรอบนี้)
 
 **ข้างใน**
 
@@ -409,11 +413,12 @@ simulator seed      --drivers 1000 --riders 1000   # สร้างบัญช
 - `loadtest/`: script k6 สำหรับยิง REST และ WebSocket แยกจาก simulator
 - export metric ของตัวเอง เช่น จำนวนคนขับจำลองที่ทำงานอยู่ ทริปสำเร็จ/ล้มเหลว
 
-**Env:** `GATEWAY_URL`, `GATEWAY_WS_URL`, `OSRM_URL`
+**Env:** `GATEWAY_URL`, `GATEWAY_WS_URL`, `OSRM_URL`, `SERVICE_AREA_BBOX`
 
 **เสร็จเมื่อ**
 
 - [ ] รัน 500 คันบนเครื่อง dev ได้ไม่กิน CPU ของ simulator เองจนบิดตัวเลข
+- [ ] ไม่มีคำขอใดของ simulator ถูกปฏิเสธด้วย `OUT_OF_SERVICE_AREA`
 - [ ] scenario `concert-exit` รันซ้ำได้ ผลออกมาเป็นตัวเลขสรุป (match สำเร็จ, p95, unfulfilled)
 
 ## `payment-service` (Phase 4)
