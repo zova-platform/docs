@@ -72,11 +72,11 @@
 
 ### 0.7 `service-template`: แม่แบบ service
 
-- [ ] `chore: add Go project layout and Taskfile`
-- [ ] `feat: wire config, logging, tracing, health and gRPC server`
-- [ ] `build: add multi-stage distroless Dockerfile`
-- [ ] `ci: call go-ci and docker-publish from ci-workflows`
-- [ ] `docs: add README and CLAUDE.md templates`
+- [x] `chore: add Go project layout and Taskfile`
+- [x] `feat: wire config, logging, tracing, health and gRPC server`
+- [x] `build: add multi-stage distroless Dockerfile`
+- [x] `ci: call go-ci and docker-publish from ci-workflows`
+- [x] `docs: add README and CLAUDE.md templates`
 
 ### 0.8 ตรวจรับ Phase 0
 
