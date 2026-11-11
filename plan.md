@@ -62,13 +62,13 @@
 
 ### 0.6 `deploy`: infra บนเครื่อง
 
-- [ ] `chore: add Taskfile with up, down and clone-all`
-- [ ] `feat(compose): add postgres with postgis, redis and nats jetstream`
-- [ ] `feat(observability): add otel collector, prometheus, tempo, loki and grafana`
-- [ ] `feat(observability): provision grafana datasources`
-- [ ] `feat(osrm): add thailand data prep task and osrm service`
-- [ ] `feat(osrm): clip map data to the Bangkok area`
-- [ ] `docs: explain local setup in README`
+- [x] `chore: add Taskfile with up, down and clone-all`
+- [x] `feat(compose): add postgres with postgis, redis and nats jetstream`
+- [x] `feat(observability): add otel collector, prometheus, tempo, loki and grafana`
+- [x] `feat(observability): provision grafana datasources`
+- [x] `feat(osrm): add thailand data prep task and osrm service`
+- [x] `feat(osrm): clip map data to the Bangkok area`
+- [x] `docs: explain local setup in README`
 
 ### 0.7 `service-template`: แม่แบบ service
 
