@@ -91,12 +91,12 @@
 
 ### 1.1 `proto`: นิยาม API ทุก service
 
-- [ ] `feat(auth): define AuthService v1`
-- [ ] `feat(location): define LocationService v1`
-- [ ] `feat(pricing): define PricingService v1`
-- [ ] `feat(dispatch): define DispatchService v1 and job event messages`
-- [ ] `feat(trip): define TripService v1 and trip event messages`
-- [ ] ติด tag `v0.2.0`
+- [x] `feat(auth): define AuthService v1`
+- [x] `feat(location): define LocationService v1`
+- [x] `feat(pricing): define PricingService v1`
+- [x] `feat(dispatch): define DispatchService v1 and job event messages`
+- [x] `feat(trip): define TripService v1 and trip event messages`
+- [x] ติด tag `v0.2.0`
 
 ### 1.2 `platform-go`: event และ outbox
 
