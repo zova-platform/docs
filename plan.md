@@ -175,7 +175,8 @@
 
 ### 1.9 `deploy`: รวมระบบ
 
-- [ ] `feat(compose): create a database per service on startup`
+- [ ] `feat(compose): create a database per service on startup` (init script ของ `auth`, `pricing`, `dispatch`, `trip` ทำไว้แล้วในขั้น 0.6 เหลือตรวจและเพิ่มที่ขาด)
+- [ ] `feat(observability): ship container logs to Loki with Alloy`
 - [ ] `feat(compose): add phase 1 services with env files`
 
 ### 1.10 `passenger-web`

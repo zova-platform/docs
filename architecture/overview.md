@@ -160,12 +160,14 @@ phase แรกมี 6 service + simulator และอีก 2 service เพ�
 | `dispatch.job.unfulfilled` | dispatch | trip | job\_id, ref\_id, reason |
 | `ride.trip.status_changed` | trip | gateway, notification | trip\_id, from, to, driver\_id, passenger\_id |
 | `ride.trip.completed` | trip | payment | trip\_id, distance\_m, duration\_s, fare\_final |
-| `location.driver.moved` | location | gateway | driver\_id, lat, lng, heading (ส่งเฉพาะคนขับที่มีทริป, ไม่เกิน 1 ครั้ง/วินาที) |
+| `location.driver.moved` | location | gateway | driver\_id, job\_id, lat, lng, heading (ส่งเฉพาะคนขับที่มีทริป, ไม่เกิน 1 ครั้ง/วินาที) ส่งผ่าน core NATS ไม่เก็บใน JetStream เพราะพิกัดเก่าไม่มีประโยชน์ถ้าเล่นซ้ำ |
 | `payment.charge.succeeded` | payment | trip, notification | trip\_id, amount, method |
 
 คนขับรับ/ปฏิเสธงานผ่าน gRPC `RespondOffer` (sync) ไม่ใช่ event เพราะคนขับต้องรู้ผลทันทีว่าได้งานหรือมีคนอื่นได้ไปแล้ว
 
-การส่งข้อมูลกลับหาผู้ใช้ทำผ่าน subject `push.user.<user_id>` บน NATS (ไม่ผ่าน JetStream เพราะถ้าผู้ใช้ไม่ได้ต่ออยู่ก็ไม่ต้องเก็บไว้) service ที่ต้องแจ้งผู้ใช้ publish ลง subject นี้เอง แล้ว gateway ที่ถือ WebSocket ของคนนั้นส่งต่อ
+JetStream stream ครอบ subject `auth.>`, `dispatch.>`, `ride.>` และ `payment.>` payload เป็น JSON ที่แปลงจาก proto ด้วยชื่อ field แบบ snake\_case (`event_id`, `occurred_at`) และ publish ด้วย `Nats-Msg-Id` เท่ากับ `event_id` เพื่อกัน event ซ้ำฝั่งส่ง ฝั่งรับข้าม `event_id` ที่เคยจัดการแล้ว
+
+การส่งข้อมูลกลับหาผู้ใช้ทำผ่าน subject `push.user.<user_id>` บน NATS (ไม่ผ่าน JetStream เพราะถ้าผู้ใช้ไม่ได้ต่ออยู่ก็ไม่ต้องเก็บไว้) ข้อความเป็น JSON `{"type":"offer.new","data":{...}}` service ที่ต้องแจ้งผู้ใช้ publish ลง subject นี้เอง แล้ว gateway ที่ถือ WebSocket ของคนนั้นส่งต่อ
 
 ## Tech stack และ tools
 
@@ -182,7 +184,7 @@ phase แรกมี 6 service + simulator และอีก 2 service เพ�
 | Database | PostgreSQL + PostGIS | ข้อมูลถาวร, query เชิงพื้นที่ | มาตรฐาน, PostGIS เก่งเรื่องพิกัด |
 | DB driver | pgx | เชื่อม Postgres | เร็วสุดใน Go |
 | Query | sqlc | generate Go จาก SQL | เขียน SQL จริงแต่ type-safe ไม่ต้องใช้ ORM |
-| Migration | goose หรือ golang-migrate | เวอร์ชัน schema | รันใน CI และตอน deploy ได้ |
+| Migration | goose | เวอร์ชัน schema | รันใน CI และตอน deploy ได้ |
 | Cache / GEO | Redis (หรือ Valkey) | พิกัดคนขับ, lock, quote, rate limit | `GEOSEARCH` เร็วมาก · ทางเลือกภายหลัง: Uber H3 |
 | Routing | OSRM + ข้อมูลกรุงเทพฯ ตัดจากไฟล์ประเทศไทยของ Geofabrik (OpenStreetMap) | ระยะทาง/เวลาจริงบนถนน, เส้นทางของ simulator | ฟรี เร็ว รันใน Docker ได้ |
 | แผนที่หน้าเว็บ | MapLibre GL JS ผ่าน react-map-gl + PMTiles (Protomaps) | แสดงแผนที่และรถ | self-host tile ได้ ไม่ติด usage policy ของ tile server สาธารณะ |
